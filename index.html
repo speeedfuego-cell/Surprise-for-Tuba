@@ -1,0 +1,206 @@
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts: Playfair Display & Satoshi -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+
+<!-- Libraries: Three.js, GSAP, canvas-confetti -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    /* General Setup */
+    body {
+        background-color: #0c0a09;
+        color: #e2e8f0;
+        font-family: 'Satoshi', sans-serif;
+        overflow: hidden;
+    }
+
+    /* Animated Aurora Background */
+    .aurora-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        background: #0c0a09;
+        overflow: hidden;
+    }
+
+    .aurora-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(150px);
+        opacity: 0.6;
+    }
+
+    .aurora-1 {
+        width: 800px;
+        height: 800px;
+        background: hsla(333, 70%, 55%, 0.4);
+        top: -20%;
+        left: -20%;
+        animation: move-aurora-1 25s infinite alternate;
+    }
+
+    .aurora-2 {
+        width: 700px;
+        height: 700px;
+        background: hsla(282, 82%, 54%, 0.3);
+        top: 10%;
+        right: -30%;
+        animation: move-aurora-2 28s infinite alternate;
+    }
+
+    .aurora-3 {
+        width: 600px;
+        height: 600px;
+        background: hsla(210, 89%, 60%, 0.3);
+        bottom: -30%;
+        left: 20%;
+        animation: move-aurora-3 30s infinite alternate;
+    }
+
+    .aurora-4 {
+        width: 500px;
+        height: 500px;
+        background: hsla(35, 90%, 60%, 0.3);
+        bottom: 0%;
+        right: 10%;
+        animation: move-aurora-4 22s infinite alternate;
+    }
+
+    @keyframes move-aurora-1 {
+        from { transform: translate(-20%, -20%) rotate(0deg); }
+        to { transform: translate(20%, 20%) rotate(45deg); }
+    }
+    @keyframes move-aurora-2 {
+        from { transform: translate(-10%, 10%) rotate(0deg); }
+        to { transform: translate(10%, -10%) rotate(-45deg); }
+    }
+    @keyframes move-aurora-3 {
+        from { transform: translate(15%, -15%) rotate(0deg); }
+        to { transform: translate(-15%, 15%) rotate(60deg); }
+    }
+    @keyframes move-aurora-4 {
+        from { transform: translate(-5%, 5%) rotate(0deg); }
+        to { transform: translate(5%, -5%) rotate(-60deg); }
+    }
+
+    /* 3D Hearts Canvas */
+    #three-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    /* Glassmorphism Card Style */
+    .card {
+        background: rgba(12, 10, 9, 0.5);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    /* Typography */
+    h1, h2 {
+        font-family: 'Playfair Display', serif;
+    }
+
+    .text-gradient {
+        background: linear-gradient(120deg, #f9a8d4, #ffffff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Buttons */
+    .glow-button {
+        background: linear-gradient(90deg, #ec4899, #ef4444);
+        box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .glow-button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 0 25px rgba(236, 72, 153, 0.8);
+    }
+
+    .glow-button:active {
+        transform: translateY(0) scale(1);
+    }
+
+    /* Progress Bar */
+    .progress-bar-track {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    #progress-bar {
+        background: linear-gradient(90deg, #ec4899, #ef4444);
+        transition: width 0.5s ease-out;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    .bento-item {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .bento-item.col-span-2 {
+        grid-column: span 2;
+    }
+    
+    /* Floating Polaroid */
+    .polaroid-container {
+        perspective: 1000px;
+    }
+    .polaroid {
+        background: white;
+        padding: 1rem;
+        padding-bottom: 3.5rem;
+        border-radius: 4px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transform: rotate(-5deg);
+        transition: transform 0.3s ease-in-out;
+        position: relative;
+    }
+    .polaroid img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+    .polaroid-caption {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        color: #333;
+        font-size: 1.25rem;
+    }
+    
+    /* Step visibility */
+    .step {
+        display: none;
+    }
+    .step.active {
+        display: flex;
+    }
+</style>
