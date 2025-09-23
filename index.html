@@ -1,202 +1,481 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday, Tuba Saifi!</title>
-    
+    <title>Happy Birthday, Tuba! 🌟</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts: Playfair Display & Satoshi -->
+    <!-- Google Fonts: Playfair Display for headings, Inter for body (similar to Satoshi) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
-
-    <!-- Libraries: Three.js, GSAP, canvas-confetti -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
+    <!-- GSAP Core CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
-        /* General Setup */
+        /* Global Styles */
         body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
             background-color: #0c0a09;
-            color: #e2e8f0;
-            font-family: 'Satoshi', sans-serif;
-            overflow: hidden;
+            color: #f0f0f0;
+            overflow-x: hidden;
+            height: 100vh;
+            position: relative;
         }
 
-        /* --- Preloader --- */
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0c0a09;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 1s ease-in-out;
-        }
-        .loader-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            color: #f9a8d4;
-            margin-bottom: 1rem;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #ec4899;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Animated Aurora Background */
-        .aurora-background {
+        /* Aurora Background Layer 1 */
+        .aurora {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: #0c0a09;
+            background: radial-gradient(ellipse at bottom, hsla(333,70%,55%,.4) 0%, transparent 50%),
+                        radial-gradient(ellipse at top, hsla(282,82%,54%,.3) 0%, transparent 50%),
+                        radial-gradient(ellipse at left, hsla(210,89%,60%,.3) 0%, transparent 50%),
+                        radial-gradient(ellipse at right, hsla(35,90%,60%,.3) 0%, transparent 50%);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+            animation: aurora-flow 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes aurora-flow {
+            0% {
+                background-position: 0% 50%, 100% 50%, 50% 0%, 50% 100%;
+                opacity: 0.8;
+            }
+            100% {
+                background-position: 100% 50%, 0% 50%, 50% 100%, 50% 0%;
+                opacity: 1;
+            }
+        }
+
+        /* Three.js Canvas for 3D Hearts */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 400px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 100;
             overflow: hidden;
         }
-        .aurora-shape {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(150px);
-            opacity: 0.6;
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b9d, #ff1493);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 2px;
         }
-        .aurora-1 { width: 800px; height: 800px; background: hsla(333, 70%, 55%, 0.4); top: -20%; left: -20%; animation: move-aurora-1 25s infinite alternate; }
-        .aurora-2 { width: 700px; height: 700px; background: hsla(282, 82%, 54%, 0.3); top: 10%; right: -30%; animation: move-aurora-2 28s infinite alternate; }
-        .aurora-3 { width: 600px; height: 600px; background: hsla(210, 89%, 60%, 0.3); bottom: -30%; left: 20%; animation: move-aurora-3 30s infinite alternate; }
-        .aurora-4 { width: 500px; height: 500px; background: hsla(35, 90%, 60%, 0.3); bottom: 0%; right: 10%; animation: move-aurora-4 22s infinite alternate; }
 
-        @keyframes move-aurora-1 { from { transform: translate(-20%, -20%) rotate(0deg); } to { transform: translate(20%, 20%) rotate(45deg); } }
-        @keyframes move-aurora-2 { from { transform: translate(-10%, 10%) rotate(0deg); } to { transform: translate(10%, -10%) rotate(-45deg); } }
-        @keyframes move-aurora-3 { from { transform: translate(15%, -15%) rotate(0deg); } to { transform: translate(-15%, 15%) rotate(60deg); } }
-        @keyframes move-aurora-4 { from { transform: translate(-5%, 5%) rotate(0deg); } to { transform: translate(5%, -5%) rotate(-60deg); } }
-
-        /* 3D Hearts Canvas */
-        #three-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
-
-        /* Glassmorphism Card Style */
+        /* Glassmorphism Cards */
         .card {
-            background: rgba(12, 10, 9, 0.5);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            background: rgba(12, 10, 9, 0.7);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: translateY(50px);
+            opacity: 0;
         }
 
         /* Typography */
-        h1, h2 { font-family: 'Playfair Display', serif; }
-        .text-gradient { background: linear-gradient(120deg, #f9a8d4, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #ffffff, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-family: 'Inter', sans-serif;
+            color: #e0e0e0;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Icons */
+        .icon {
+            font-size: 4rem;
+            display: block;
+            margin: 0 auto 1rem;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
         /* Buttons */
-        .glow-button { background: linear-gradient(90deg, #ec4899, #ef4444); box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); transition: all 0.3s ease-in-out; }
-        .glow-button:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 0 25px rgba(236, 72, 153, 0.8); }
-        .glow-button:active { transform: translateY(0) scale(1); }
+        .btn {
+            display: block;
+            margin: 0 auto;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #ff6b9d, #ff1493);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
 
-        /* Progress Bar */
-        .progress-bar-track { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        #progress-bar { background: linear-gradient(90deg, #ec4899, #ef4444); transition: width 0.5s ease-out; }
+        .btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+        }
 
-        /* Bento Grid */
-        .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-        .bento-item { background: rgba(255, 255, 255, 0.05); border-radius: 1rem; padding: 1rem; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .bento-item.col-span-2 { grid-column: span 2; }
-        
-        /* Floating Polaroid */
-        .polaroid-container { perspective: 1000px; }
-        .polaroid { background: white; padding: 1rem; padding-bottom: 3.5rem; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform: rotate(-5deg); transition: transform 0.3s ease-in-out; position: relative; }
-        .polaroid img { display: block; max-width: 100%; height: auto; }
-        .polaroid-caption { position: absolute; bottom: 1rem; left: 1rem; right: 1rem; text-align: center; font-family: 'Playfair Display', serif; color: #333; font-size: 1.25rem; }
-        
-        /* Step visibility */
-        .step { display: none; }
-        .step.active { display: flex; }
+        .btn:active {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Step Hiding */
+        .step {
+            display: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .step.active {
+            display: flex;
+        }
+
+        /* Bento Grid for Step 3 */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .bento-card {
+            background: rgba(12, 10, 9, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bento-card.large {
+            grid-column: span 2;
+        }
+
+        .bento-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: #ff6b9d;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Polaroid for Step 4 */
+        .polaroid {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 2rem auto;
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 60px;
+            background: white;
+            border-radius: 10px;
+            z-index: -1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* Finale Text */
+        .finale-text {
+            opacity: 0;
+            transform: translateY(20px);
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+            .bento-card.large {
+                grid-column: span 1;
+            }
+            .polaroid {
+                width: 250px;
+                height: 330px;
+            }
+            .progress-container {
+                width: 90%;
+            }
+        }
+
+        /* Confetti Styles (handled by JS) */
     </style>
 </head>
-<body class="w-full h-screen flex items-center justify-center p-4 overflow-hidden">
-    
-    <!-- Preloader -->
-    <div id="loader">
-        <div class="loader-text">Building your world...</div>
-        <div class="spinner"></div>
-    </div>
-    
-    <!-- Background Layers -->
-    <div class="aurora-background">
-        <div class="aurora-shape aurora-1"></div>
-        <div class="aurora-shape aurora-2"></div>
-        <div class="aurora-shape aurora-3"></div>
-        <div class="aurora-shape aurora-4"></div>
-    </div>
+<body>
+    <!-- Aurora Background -->
+    <div class="aurora"></div>
+
+    <!-- Three.js Canvas -->
     <canvas id="three-canvas"></canvas>
 
     <!-- Progress Bar -->
-    <div class="progress-bar-track fixed top-4 left-1/2 -translate-x-1/2 w-1/3 max-w-sm h-2 rounded-full">
-        <div id="progress-bar" class="h-full rounded-full" style="width: 0%;"></div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
     </div>
 
-    <!-- Main Content Wrapper (Initially hidden) -->
-    <main class="w-full max-w-2xl mx-auto opacity-0">
-        
-        <!-- Step 1: Welcome -->
-        <div id="step-1" class="step active flex-col items-center text-center p-8 md:p-12 card">
-            <div class="text-6xl mb-4 animate-pulse">❤️</div>
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-gradient">Hey Tuba,</h1>
-            <p class="text-lg md:text-xl text-slate-300 mb-8">I built a little world for you, just to bring a smile to your face on your special day.</p>
-            <button class="glow-button text-white font-bold py-3 px-8 rounded-full text-lg" onclick="goToStep(2)">Let's Begin</button>
+    <!-- Main Content -->
+    <div class="step active" id="step1">
+        <div class="card">
+            <div class="icon">❤️</div>
+            <h1>Hey Tuba,</h1>
+            <p>I (Surya Kapoor) built a little world for you, just to bring a smile to your face on your special day.</p>
+            <button class="btn" onclick="nextStep(1)">Let's Begin</button>
         </div>
+    </div>
 
-        <!-- Step 2: Core Message -->
-        <div id="step-2" class="step flex-col items-center text-center p-8 md:p-12 card">
-            <div class="text-6xl mb-4">🎉</div>
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-gradient">Happy Birthday!</h1>
-            <p class="text-lg md:text-xl text-slate-300 mb-8">Another year of you making the world brighter. Your existence is a gift, and I'm so lucky to witness it.</p>
-            <button class="glow-button text-white font-bold py-3 px-8 rounded-full text-lg" onclick="goToStep(3)">There's more...</button>
+    <div class="step" id="step2">
+        <div class="card">
+            <div class="icon">🎉</div>
+            <h1>Happy Birthday, Tuba!</h1>
+            <p>Another year of you making the world brighter. Your existence is a gift, and I'm so lucky to witness it.</p>
+            <button class="btn" onclick="nextStep(2)">There's more...</button>
         </div>
+    </div>
 
-        <!-- Step 3: Reasons Why -->
-        <div id="step-3" class="step flex-col items-center text-center p-8 md:p-12 card w-full">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gradient">A Few Things I Adore About You</h1>
-            <div class="bento-grid w-full text-left mb-8">
-                <div class="bento-item col-span-2">
-                    <h2 class="text-xl font-bold text-pink-300 mb-2">✨ Your Unmatched Kindness</h2>
-                    <p class="text-slate-300">The genuine warmth you show to everyone is something truly rare and beautiful.</p>
+    <div class="step" id="step3">
+        <div class="card">
+            <h1>A Few Things I Adore About You</h1>
+            <div class="bento-grid">
+                <div class="bento-card large">
+                    <h3>✨ Your Unmatched Kindness</h3>
+                    <p>The genuine warmth you show to everyone is something truly rare and beautiful.</p>
                 </div>
-                <div class="bento-item">
-                    <h2 class="text-xl font-bold text-pink-300 mb-2">😊 That Smile</h2>
-                    <p class="text-slate-300">It's a work of art.</p>
+                <div class="bento-card">
+                    <h3>😊 That Smile</h3>
+                    <p>It's a work of art.</p>
                 </div>
-                <div class="bento-item col-span-2 md:col-span-1">
-                    <h2 class="text-xl font-bold text-pink-300 mb-2">🌟 Your Radiant Spirit</h2>
-                    <p class="text-slate-300">Your passion for life is infectious. Being around you makes everything feel more exciting and possible.</p>
+                <div class="bento-card large">
+                    <h3>🌸 Your Radiant Spirit</h3>
+                    <p>Your passion for life is infectious. Being around you makes everything feel more exciting and possible.</p>
                 </div>
             </div>
-            <button class="glow-button text-white font-bold py-3 px-8 rounded-full text-lg" onclick="goToStep(4)">Remember this?</button>
+            <button class="btn" onclick="nextStep(3)">Remember this?</button>
         </div>
+    </div>
 
-        <!-- Step 4: Shared Memory -->
-        <div id="step-4" class="step flex-col items-center text-center p-8 md:p-12 card">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gradient">That One Time...</h1>
-            <div class="polaroid-container w-full max-w-sm mb-8">
-                <div class="polaroid">
-                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEBUSEhIVFRUXFxcXFRgXFxgYGBgYFxgXFxcYFxUYHSggGBolHRgVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAADBAIFBgEHAAj/xABEEAACAQMCAwUFBgMFBgYDAAABAgMABBESIQUxQVEGEyJhcYGRoTKxwfAHFCNS0eFyghVicqKyM0OCkvElU2ODs8PT/A//Z" alt="A cherished memory with Tuba Saifi">
+    <div class="step" id="step4">
+        <div class="card">
+            <h1>That One Time...</h1>
+            <div class="polaroid" id="polaroid">
+                <img src="https://i.ibb.co/6Z6XgCg/crush.webp" alt="Our favorite memory">
+                <div class="polaroid-caption">Our favorite memory with Tuba and Surya.</div>
+            </div>
+            <p>Every moment with you feels like a scene from a movie I'd watch on repeat.</p>
+            <button class="btn" onclick="nextStep(4)">One last thing...</button>
+        </div>
+    </div>
+
+    <div class="step" id="step5">
+        <div class="card">
+            <div class="icon">🎂</div>
+            <h1>My Wish For You</h1>
+            <p>May the next year bring you all the love, success, and pure happiness you so rightfully deserve. May your dreams soar higher than ever.</p>
+            <div class="finale-text" id="finaleText" style="display: none;">Happy Birthday, Tuba! From Surya ❤️</div>
+            <button class="btn" id="celebrateBtn" onclick="celebrate()">Celebrate!</button>
+        </div>
+    </div>
+
+    <script>
+        // Step Management
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function nextStep(stepNum) {
+            if (stepNum !== currentStep) return;
+            const tl = gsap.timeline();
+            tl.to(`#step${currentStep}`, { opacity: 0, y: -50, scale: 0.9, duration: 0.5 })
+              .to(`#step${currentStep}`, { display: 'none', duration: 0 }, '-=0.3')
+              .to(`#step${currentStep + 1}`, { display: 'flex', duration: 0 })
+              .fromTo(`#step${currentStep + 1}`, 
+                { opacity: 0, y: 50, scale: 1.1 }, 
+                { opacity: 1, y: 0, scale: 1, duration: 0.5 }
+              );
+
+            // Animate internal elements with stagger
+            gsap.fromTo(`#step${currentStep + 1} .card > *`, 
+                { opacity: 0, y: 20 }, 
+                { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }
+            );
+
+            currentStep++;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            gsap.to('#progressBar', { width: `${progress}%`, duration: 0.5 });
+        }
+
+        // Three.js 3D Floating Hearts
+        function initThreeJS() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Heart Geometry (simple heart shape using torus knot approximation)
+            const heartGeometry = new THREE.TorusKnotGeometry(0.3, 0.1, 100, 16);
+            const heartMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff69b4, 
+                shininess: 100,
+                transparent: true,
+                opacity: 0.7
+            });
+
+            const hearts = [];
+            for (let i = 0; i < 25; i++) {
+                const heart = new THREE.Mesh(heartGeometry, heartMaterial.clone());
+                heart.position.set(
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20
+                );
+                heart.scale.setScalar(Math.random() * 0.5 + 0.5);
+                heart.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                scene.add(heart);
+                hearts.push(heart);
+            }
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xff69b4, 1, 100);
+            pointLight.position.set(0, 0, 10);
+            scene.add(pointLight);
+
+            camera.position.z = 5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                hearts.forEach((heart, i) => {
+                    heart.rotation.x += 0.01;
+                    heart.rotation.y += 0.01;
+                    heart.position.y += Math.sin(Date.now() * 0.001 + i) * 0.005;
+                    heart.position.x += Math.cos(Date.now() * 0.001 + i) * 0.003;
+                });
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Finale hearts swirl out
+            window.swirlHearts = function() {
+                hearts.forEach((heart, i) => {
+                    gsap.to(heart.position, {
+                        x: (Math.random() - 0.5) * 50,
+                        y: 50,
+                        z: (Math.random() - 0.5) * 50,
+                        duration: 3 + Math.random() * 2,
+                        onComplete: () => {
+                            scene.remove(heart);
+                            if (i === hearts.length - 1) {
+                                renderer.setClearColor(0x000000, 0);
+                            }
+                        }
+                    });
+                    gsap.to(heart.material, { opacity: 0, duration: 3 });
+                    gsap.to(heart.rotation, { z: Math.PI * 4, duration: 3 });
+                });
+            };
+
+            // Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Polaroid Parallax
+        document.addEventListener('DOMContentLoaded', () => {
+            const polaroid = document.getElementById('polaroid');
+            document.addEventListener('mousemove', (e) => {
+                if (!polaroid) return;
+                const rect = polaroid.getBoundingClient    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEBUSEhIVFRUXFxcXFRgXFxgYGBgYFxgXFxcYFxUYHSggGBolHRgVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAADBAIFBgEHAAj/xABEEAACAQMCAwUFBgMFBgYDAAABAgMABBESIQUxQVEGEyJhcYGRoTKxwfAHFCNS0eFyghVicqKyM0OCkvElU2ODs8PT/A//Z" alt="A cherished memory with Tuba Saifi">
                     <p class="polaroid-caption">Our favorite memory.</p>
                 </div>
             </div>
